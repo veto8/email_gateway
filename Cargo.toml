@@ -4,7 +4,7 @@ version = "0.1.0"
 edition = "2024"
 
 [dependencies]
-axum = { version = "*"}
+axum = { version = "*" }
 axum_cors = { version = "*"}
 chrono = { version = "*", features = ["serde"] }
 serde = { version = "*", features = ["derive"] }
