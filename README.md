@@ -1,2 +1,4 @@
 # email_gateway
-Email Gateway API Server to process emails send from static ajax websites 
+Email Gateway API Server to process emails send from static ajax websites.
+
+# Complete broken for now, just startet
