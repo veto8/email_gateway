@@ -38,15 +38,17 @@ pub async fn sign_in(headers: HeaderMap) -> impl IntoResponse {
         if user == "info@foo.com" && password == "12345" {
             println!("{user} : {password}");
 
-            let _token = encode_token().await;
-            if _token.is_ok() {
-                token = _token.unwrap();
+            /*
+                let _token = encode_token().await;
+                if _token.is_ok() {
+                    token = _token.unwrap();
             }
+                */
         }
     }
     token.into_response()
 }
-
+/*
 pub async fn encode_token() -> Result<String, Box<dyn Error>> {
     let key: Hmac<Sha256> = Hmac::new_from_slice(b"secret-xxxx")?;
     //let mut claims = BTreeMap::new();
@@ -63,7 +65,7 @@ pub async fn encode_token() -> Result<String, Box<dyn Error>> {
 
     Ok(token)
 }
-
+*/
 pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
     //println!("{}", token);
     let mut r = false;
