@@ -28,6 +28,9 @@ pub async fn get_token(
     // http://127.0.0.1:8889/get_token
     let mut token = "".to_string();
     let mut page = "".to_string();
+
+    println!("{}", env!("token_secret"));
+
     if params.contains_key("page") {
         page = params["page"].replace(" ", "");
         println!("{}", page);
@@ -53,6 +56,9 @@ pub async fn get_token(
 }
 
 pub async fn encode_token(host: &str) -> Result<String, Box<dyn Error>> {
+    let secret: &[u8] = &env!("token_secret").to_string().into_bytes();
+
+    println!("{:?}", secret);
     let key: Hmac<Sha256> = Hmac::new_from_slice(b"secret-xxxx")?;
     //let mut claims = BTreeMap::new();
     let mut claims = BTreeMap::<&str, &str>::new();
