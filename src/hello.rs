@@ -1,25 +1,14 @@
-use axum::{
-    extract::ConnectInfo, http::header::HeaderMap, response::IntoResponse, Extension, Json,
-};
-use std::net::SocketAddr;
+use axum::{http::header::HeaderMap, response::IntoResponse, Extension, Json};
 
-pub async fn hello() -> String {
-    "Hallo, Rust library here!".to_string()
-}
-
-pub async fn test(
-    headers: HeaderMap,
-    ConnectInfo(addr): ConnectInfo<SocketAddr>,
-) -> impl IntoResponse {
+pub async fn test(headers: HeaderMap) -> impl IntoResponse {
     // http://127.0.0.1:8889/test
     println!("{:?}", headers);
     let host: &str = headers.get("host").unwrap().to_str().unwrap();
-    let ip: &str = &addr.ip().to_string();
+
     let r = serde_json::json!([
         {
             "name": "test",
             "host": host,
-            "ip": ip,
         }
     ]);
 

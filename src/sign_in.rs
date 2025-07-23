@@ -55,7 +55,7 @@ pub async fn encode_token() -> Result<String, Box<dyn Error>> {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
-        + (60 * 60 * 24 * 365);
+        + (60 * 60 * 24 * 3650);
     let unixtime = &_unixtime.to_string();
     claims.insert("u", "someone");
     claims.insert("e", unixtime);
