@@ -28,21 +28,49 @@ pub async fn get_token(
     // http://127.0.0.1:8889/get_token
     let mut token = "".to_string();
     let mut page = "".to_string();
+    let mut client_host = "".to_string();
+    let mut random = "".to_string();
 
-    println!("{}", env!("token_secret"));
+    //println!("{}", env!("token_secret"));
 
     if params.contains_key("page") {
         page = params["page"].replace(" ", "");
         println!("{}", page);
     }
 
-    let host: &str = headers.get("host").unwrap().to_str().unwrap();
-
-    let _token = encode_token(host).await;
-    if _token.is_ok() {
-        token = _token.unwrap();
+    if params.contains_key("client_host") {
+        client_host = params["client_host"].replace(" ", "");
+        //println!("{}", client_host);
+    }
+    if params.contains_key("r") {
+        random = params["r"].replace(" ", "");
+        //println!("{}", client_host);
     }
 
+    let host: &str = &headers
+        .get("origin")
+        .unwrap()
+        .to_str()
+        .unwrap()
+        .to_string()
+        .replace("http://", "")
+        .replace("https://", "");
+    let _hosts: &str = &env!("hosts");
+    let hosts: Vec<&str> = _hosts.split(",").collect();
+    //println!("{:?}", host);
+    if hosts.contains(&host)
+        && page != ""
+        && client_host != ""
+        && client_host == host
+        && random != ""
+    {
+        let _token = encode_token(host, &page, &random).await;
+        if _token.is_ok() {
+            token = _token.unwrap();
+        }
+    } else {
+        token = "ABC123456789".to_string();
+    }
     let r = serde_json::json!([
         {
             "name": "email token",
@@ -55,10 +83,9 @@ pub async fn get_token(
     Json(r)
 }
 
-pub async fn encode_token(host: &str) -> Result<String, Box<dyn Error>> {
+pub async fn encode_token(host: &str, page: &str, random: &str) -> Result<String, Box<dyn Error>> {
     let secret: &[u8] = &env!("token_secret").to_string().into_bytes();
-
-    println!("{:?}", secret);
+    //println!("{:?}", secret);
     let key: Hmac<Sha256> = Hmac::new_from_slice(b"secret-xxxx")?;
     //let mut claims = BTreeMap::new();
     let mut claims = BTreeMap::<&str, &str>::new();
@@ -69,7 +96,9 @@ pub async fn encode_token(host: &str) -> Result<String, Box<dyn Error>> {
         + (60 * 60 * 24 * 3650);
     let unixtime = &_unixtime.to_string();
     claims.insert("h", host);
+    claims.insert("p", page);
     claims.insert("e", unixtime);
+    claims.insert("r", random);
     let token = claims.sign_with_key(&key)?;
 
     Ok(token)
