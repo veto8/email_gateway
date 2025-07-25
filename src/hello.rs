@@ -1,5 +1,15 @@
 use axum::{http::header::HeaderMap, response::IntoResponse, Extension, Json};
 
+#[derive(Deserialize)]
+struct CreateUser {
+    email: String,
+    password: String,
+}
+
+async fn testx(Json(payload): Json<CreateUser>) {
+    // ...
+}
+
 pub async fn test(headers: HeaderMap) -> impl IntoResponse {
     // http://127.0.0.1:8889/test
     println!("{:?}", headers);
