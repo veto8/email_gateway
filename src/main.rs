@@ -1,9 +1,9 @@
 use axum::{
     http::{HeaderValue, Method},
-    routing::get,
+    routing::{get, post},
     Router,
 };
-use libs::email::*;
+use libs::email::email;
 use libs::hello::*;
 use libs::token::*;
 use tower_http::cors::CorsLayer;
@@ -26,7 +26,7 @@ async fn main() {
     let app = Router::new()
         .route("/test", get(test))
         .route("/token", get(get_token))
-        .route("/email", post(testx))
+        .route("/email", post(email))
         .layer(cors)
         .layer(CorsLayer::permissive());
 

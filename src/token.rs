@@ -86,8 +86,9 @@ pub async fn get_token(
 pub async fn encode_token(host: &str, page: &str, random: &str) -> Result<String, Box<dyn Error>> {
     let secret: &[u8] = &env!("token_secret").to_string().into_bytes();
     //println!("{:?}", secret);
-    let key: Hmac<Sha256> = Hmac::new_from_slice(b"secret-xxxx")?;
+    let key: Hmac<Sha256> = Hmac::new_from_slice(secret)?;
     //let mut claims = BTreeMap::new();
+
     let mut claims = BTreeMap::<&str, &str>::new();
     let _unixtime = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -102,4 +103,33 @@ pub async fn encode_token(host: &str, page: &str, random: &str) -> Result<String
     let token = claims.sign_with_key(&key)?;
 
     Ok(token)
+}
+
+pub async fn test_ok() -> String {
+    let s = "ok".to_string();
+    return s;
+}
+
+pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
+    //println!("{}", token);
+    let secret: &[u8] = &env!("token_secret").to_string().into_bytes();
+    let mut r = false;
+    let unix_now = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
+    let key: Hmac<Sha256> = Hmac::new_from_slice(secret).unwrap();
+    let _claims: Result<BTreeMap<String, String>, jwt::Error> = token.verify_with_key(&key);
+    if _claims.is_ok() {
+        let claims = _claims.unwrap();
+        let _unix_expire: Result<String, _> = claims["e"].parse();
+        if _unix_expire.is_ok() {
+            let unix_expire: u64 = _unix_expire.unwrap().parse().unwrap();
+            if unix_expire >= unix_now {
+                //println!("{}(expire time) >= {}(time now)", unix_expire, unix_now);
+                r = true;
+            }
+        }
+    }
+    Ok(r)
 }
