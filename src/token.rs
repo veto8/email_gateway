@@ -69,7 +69,7 @@ pub async fn get_token(
             token = _token.unwrap();
         }
     } else {
-        token = "ABC123456789".to_string();
+        token = env!("token_fake").to_string();
     }
     let r = serde_json::json!([
         {

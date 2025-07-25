@@ -1,3 +1,4 @@
 [env]
 token_secret = "secretpass"
 hosts = "127.0.0.1:88,domain-swapper.myridia.com"
+token_fake ="ABC1234567890"
