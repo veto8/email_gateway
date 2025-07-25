@@ -123,9 +123,19 @@ pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
     if _claims.is_ok() {
         let claims = _claims.unwrap();
         let _unix_expire: Result<String, _> = claims["e"].parse();
-        if _unix_expire.is_ok() {
+        let _host: Result<String, _> = claims["h"].parse();
+        let _page: Result<String, _> = claims["p"].parse();
+        let _random: Result<String, _> = claims["r"].parse();
+        if _unix_expire.is_ok() && _host.is_ok() && _page.is_ok() & _random.is_ok() {
             let unix_expire: u64 = _unix_expire.unwrap().parse().unwrap();
-            if unix_expire >= unix_now {
+            let host: String = _host.unwrap().parse().unwrap();
+            let page: String = _page.unwrap().parse().unwrap();
+            let random: i32 = _random.unwrap().parse().unwrap();
+
+            let _hosts: &str = &env!("hosts");
+            let hosts: Vec<&str> = _hosts.split(",").collect();
+
+            if unix_expire >= unix_now && hosts.contains(&host.as_str()) && random < 1 {
                 //println!("{}(expire time) >= {}(time now)", unix_expire, unix_now);
                 r = true;
             }
