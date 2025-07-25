@@ -19,7 +19,7 @@ hmac = {version ="*"}
 sha2 = {version ="*"}
 base64 = {version ="*"}
 urldecode = {version ="*"}
-
+lettre = {version ="*"}
 [lib]
 name = "libs"
 path = "src/lib.rs"

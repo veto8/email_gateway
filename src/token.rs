@@ -135,8 +135,7 @@ pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
             let _hosts: &str = &env!("hosts");
             let hosts: Vec<&str> = _hosts.split(",").collect();
 
-            if unix_expire >= unix_now && hosts.contains(&host.as_str()) && random < 1 {
-                //println!("{}(expire time) >= {}(time now)", unix_expire, unix_now);
+            if unix_expire >= unix_now && hosts.contains(&host.as_str()) && random <= 1000 {
                 r = true;
             }
         }

@@ -2,3 +2,7 @@
 token_secret = "secretpass"
 hosts = "127.0.0.1:88,domain-swapper.myridia.com"
 token_fake ="ABC1234567890"
+smtp_host="foo.com"
+smtp_user="api.foo.com"
+smtp_pass="barbar"
+smtp_port="25"

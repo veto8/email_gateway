@@ -1,11 +1,12 @@
 use crate::token;
 use axum::{extract, http::header::HeaderMap, response::IntoResponse, Extension, Json};
+use lettre::transport::smtp::authentication::Credentials;
+use lettre::{Message, SmtpTransport, Transport};
+use serde::Deserialize;
 use urldecode::decode;
 
-use serde::Deserialize;
-
 #[derive(Deserialize)]
-pub struct Message {
+pub struct Messagex {
     xemail: String,
     xname: String,
     xmessage: String,
@@ -13,7 +14,7 @@ pub struct Message {
     random: String,
 }
 
-pub async fn email(extract::Json(payload): extract::Json<Message>) {
+pub async fn email(extract::Json(payload): extract::Json<Messagex>) {
     let name = decode(payload.xname);
     let email = decode(payload.xemail);
     let message = decode(payload.xmessage);
@@ -22,7 +23,31 @@ pub async fn email(extract::Json(payload): extract::Json<Message>) {
     let v_message: Vec<String> = serde_json::from_str(&message).unwrap();
     let x = token::test_ok().await;
     let a = token::auth_token(&token).await;
-    println!("{:?}", a);
+    if a.unwrap() == true {
+        println!("ok");
+        let smtp_host: &str = &env!("smtp_host");
+        let smtp_user: &str = &env!("smtp_user");
+        let smtp_pass: &str = &env!("smtp_pass");
+        let smtp_port: &str = &env!("smtp_port");
+
+        let email = Message::builder()
+            .from("Sender <veto@myridia.com>".parse().unwrap())
+            .to("Sender <veto@myridia.com>".parse().unwrap())
+            .subject("Sending email with Rust")
+            .body(String::from("This is my first email"))
+            .unwrap();
+        let creds = Credentials::new(smtp_user.to_string(), smtp_pass.to_string());
+
+        let mailer = SmtpTransport::relay(smtp_host)
+            .unwrap()
+            .credentials(creds)
+            .build();
+        // Send the email
+        match mailer.send(&email) {
+            Ok(_) => println!("Email sent successfully!"),
+            Err(e) => panic!("Could not send email: {:?}", e),
+        }
+    }
 }
 
 pub async fn emailx(headers: HeaderMap) -> impl IntoResponse {
