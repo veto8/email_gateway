@@ -95,10 +95,16 @@ pub async fn encode_token(host: &str, page: &str, random: &str) -> Result<String
         .unwrap()
         .as_secs()
         + (60 * 60 * 24 * 3650);
+    let _unixstamp = SystemTime::now()
+        .duration_since(UNIX_EPOCH)
+        .unwrap()
+        .as_secs();
     let unixtime = &_unixtime.to_string();
+    let unixstamp = &_unixstamp.to_string();
     claims.insert("h", host);
     claims.insert("p", page);
     claims.insert("e", unixtime);
+    claims.insert("u", unixstamp);
     claims.insert("r", random);
     let token = claims.sign_with_key(&key)?;
 
@@ -123,19 +129,26 @@ pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
     if _claims.is_ok() {
         let claims = _claims.unwrap();
         let _unix_expire: Result<String, _> = claims["e"].parse();
+        let _unix_stamp: Result<String, _> = claims["u"].parse();
         let _host: Result<String, _> = claims["h"].parse();
         let _page: Result<String, _> = claims["p"].parse();
         let _random: Result<String, _> = claims["r"].parse();
         if _unix_expire.is_ok() && _host.is_ok() && _page.is_ok() & _random.is_ok() {
             let unix_expire: u64 = _unix_expire.unwrap().parse().unwrap();
+            let unix_stamp: u64 = _unix_stamp.unwrap().parse().unwrap();
             let host: String = _host.unwrap().parse().unwrap();
             let page: String = _page.unwrap().parse().unwrap();
             let random: i32 = _random.unwrap().parse().unwrap();
-
+            let random_max: i32 = env!("random_max").to_string().parse().unwrap();
+            let time_passed: u64 = env!("time_passed").to_string().parse().unwrap();
             let _hosts: &str = &env!("hosts");
             let hosts: Vec<&str> = _hosts.split(",").collect();
-
-            if unix_expire >= unix_now && hosts.contains(&host.as_str()) && random <= 1000 {
+            println!("{:?}", time_passed);
+            if unix_expire >= unix_now
+                && hosts.contains(&host.as_str())
+                && random <= random_max
+                && (unix_now - unix_stamp) > time_passed
+            {
                 r = true;
             }
         }
