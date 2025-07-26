@@ -14,7 +14,9 @@ pub struct Messagex {
     random: String,
 }
 
-pub async fn email(extract::Json(payload): extract::Json<Messagex>) {
+pub async fn email(extract::Json(payload): extract::Json<Messagex>) -> impl IntoResponse {
+    let mut ret = serde_json::json!({"ok": false,"msg":"Could not send email"});
+    let mut r = "Could not send email";
     let name = decode(payload.xname);
     let email = decode(payload.xemail);
     let message = decode(payload.xmessage);
@@ -24,7 +26,7 @@ pub async fn email(extract::Json(payload): extract::Json<Messagex>) {
     let x = token::test_ok().await;
     let a = token::auth_token(&token).await;
     if a.unwrap() == true {
-        println!("ok");
+        //println!("ok");
         let smtp_host: &str = &env!("smtp_host");
         let smtp_user: &str = &env!("smtp_user");
         let smtp_pass: &str = &env!("smtp_pass");
@@ -44,10 +46,11 @@ pub async fn email(extract::Json(payload): extract::Json<Messagex>) {
             .build();
         // Send the email
         match mailer.send(&email) {
-            Ok(_) => println!("Email sent successfully!"),
+            Ok(_) => ret = serde_json::json!({"ok": true,"msg":"Could not send email,"}),
             Err(e) => panic!("Could not send email: {:?}", e),
         }
     }
+    Json(ret)
 }
 
 pub async fn emailx(headers: HeaderMap) -> impl IntoResponse {
