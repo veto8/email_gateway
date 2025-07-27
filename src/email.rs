@@ -12,11 +12,13 @@ pub struct Messagex {
     xmessage: String,
     token: String,
     random: String,
+    page: String,
 }
 
 pub async fn email(extract::Json(payload): extract::Json<Messagex>) -> impl IntoResponse {
     let mut ret = serde_json::json!({"ok": false,"msg":"Could not send email"});
     let mut r = "Could not send email";
+    let page = decode(payload.page);
     let name = decode(payload.xname);
     let email = decode(payload.xemail);
     let message = decode(payload.xmessage);
@@ -31,12 +33,19 @@ pub async fn email(extract::Json(payload): extract::Json<Messagex>) -> impl Into
         let smtp_user: &str = &env!("smtp_user");
         let smtp_pass: &str = &env!("smtp_pass");
         let smtp_port: &str = &env!("smtp_port");
+        let email_send_from: &str = &env!("email_send_from");
+        let email_send_to: &str = &env!("email_send_to");
+        let name_send_to: &str = &env!("name_send_to");
+        let mut body = "".to_string();
+        body.push_str(&format!("Page: {page}"));
+        body.push_str(&format!("Subject: {name}"));
+        body.push_str(&v_message.join("\n"));
 
         let email = Message::builder()
-            .from("Sender <veto@myridia.com>".parse().unwrap())
-            .to("Sender <veto@myridia.com>".parse().unwrap())
-            .subject("Sending email with Rust")
-            .body(String::from("This is my first email"))
+            .from(format!("{page} <{email_send_from}>").parse().unwrap())
+            .to(format!("{name_send_to} <{email_send_to}>").parse().unwrap())
+            .subject(format!("Sending email from {page}"))
+            .body(body)
             .unwrap();
         let creds = Credentials::new(smtp_user.to_string(), smtp_pass.to_string());
 
@@ -46,7 +55,7 @@ pub async fn email(extract::Json(payload): extract::Json<Messagex>) -> impl Into
             .build();
         // Send the email
         match mailer.send(&email) {
-            Ok(_) => ret = serde_json::json!({"ok": true,"msg":"Could not send email,"}),
+            Ok(_) => ret = serde_json::json!({"ok": true,"msg":"Successfully send email,"}),
             Err(e) => panic!("Could not send email: {:?}", e),
         }
     }

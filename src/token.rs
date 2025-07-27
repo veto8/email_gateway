@@ -85,6 +85,7 @@ pub async fn get_token(
 
 pub async fn encode_token(host: &str, page: &str, random: &str) -> Result<String, Box<dyn Error>> {
     let secret: &[u8] = &env!("token_secret").to_string().into_bytes();
+    let token_valid: u64 = env!("token_valid").to_string().parse().unwrap();
     //println!("{:?}", secret);
     let key: Hmac<Sha256> = Hmac::new_from_slice(secret)?;
     //let mut claims = BTreeMap::new();
@@ -94,7 +95,7 @@ pub async fn encode_token(host: &str, page: &str, random: &str) -> Result<String
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_secs()
-        + (60 * 60 * 24 * 3650);
+        + token_valid;
     let _unixstamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
@@ -143,7 +144,9 @@ pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
             let time_passed: u64 = env!("time_passed").to_string().parse().unwrap();
             let _hosts: &str = &env!("hosts");
             let hosts: Vec<&str> = _hosts.split(",").collect();
-            println!("{:?}", time_passed);
+            //println!("{:?}", time_passed);
+            //println!("{:?}", unix_now - unix_stamp);
+            //println!("{:?}", unix_expire - unix_now);
             if unix_expire >= unix_now
                 && hosts.contains(&host.as_str())
                 && random <= random_max
