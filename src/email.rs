@@ -37,10 +37,9 @@ pub async fn email(extract::Json(payload): extract::Json<Messagex>) -> impl Into
         let email_send_to: &str = &env!("email_send_to");
         let name_send_to: &str = &env!("name_send_to");
         let mut body = "".to_string();
-        body.push_str(&format!("Page: {page}"));
-        body.push_str(&format!("Subject: {name}"));
+        body.push_str(&format!("Page: {page}\n"));
+        body.push_str(&format!("Subject: {name}\n"));
         body.push_str(&v_message.join("\n"));
-
         let email = Message::builder()
             .from(format!("{page} <{email_send_from}>").parse().unwrap())
             .to(format!("{name_send_to} <{email_send_to}>").parse().unwrap())
