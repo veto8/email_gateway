@@ -3,9 +3,12 @@ use axum::{
     routing::{get, post},
     Router,
 };
+
 use libs::email::email;
 use libs::test::*;
 use libs::token::*;
+//use std::net::SocketAddr;
+use std::net::SocketAddr;
 use tower_http::cors::CorsLayer;
 
 #[tokio::main]
@@ -39,5 +42,10 @@ async fn main() {
     println!("https://api.grallator.com/test");
     println!("https://api.grallator.com/token?page=domain-swapper&client_host=domain-swapper.myridia.com&r=55");
     let listener = tokio::net::TcpListener::bind(host).await.unwrap();
-    axum::serve(listener, app).await.unwrap();
+    axum::serve(
+        listener,
+        app.into_make_service_with_connect_info::<SocketAddr>(),
+    )
+    .await
+    .unwrap()
 }

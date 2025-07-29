@@ -1,8 +1,28 @@
-use axum::{http::header::HeaderMap, response::IntoResponse, Extension, Json};
+use axum::{
+    extract::{ConnectInfo, Request},
+    http::header::HeaderMap,
+    response::IntoResponse,
+    Extension, Json,
+};
+use axum_client_ip::XRealIp as ClientIp;
+use std::net::SocketAddr;
 
-pub async fn test(headers: HeaderMap) -> impl IntoResponse {
+pub async fn test(
+    headers: HeaderMap,
+    req: Request,
+    ConnectInfo(addr): ConnectInfo<SocketAddr>,
+) -> impl IntoResponse {
     // http://127.0.0.1:8889/test
-    println!("{:?}", headers);
+    //println!("{:?}", ip);
+
+    let ip = req
+        .headers()
+        .get("x-forwarded-for")
+        .and_then(|v| v.to_str().ok())
+        .map(|s| s.split(',').next().unwrap_or("").trim())
+        .filter(|s| !s.is_empty())
+        .unwrap_or("unknown");
+
     let name: &str = &env!("name");
     let host: &str = headers.get("host").unwrap().to_str().unwrap();
     let user_agent: &str = headers.get("user-agent").unwrap().to_str().unwrap();
@@ -13,6 +33,7 @@ pub async fn test(headers: HeaderMap) -> impl IntoResponse {
             "name": name,
             "host": host,
             "user_agent": user_agent,
+            "ip": ip,
         }
     ]);
 
