@@ -47,14 +47,12 @@ pub async fn get_token(
         //println!("{}", client_host);
     }
 
-    let host: &str = &headers
-        .get("origin")
-        .unwrap()
-        .to_str()
-        .unwrap()
-        .to_string()
-        .replace("http://", "")
-        .replace("https://", "");
+    let _origin = headers.get("origin");
+    let mut origin = "".to_string();
+    if _origin.is_some() {
+        origin = _origin.unwrap().to_str().unwrap().to_string();
+    }
+    let host: &str = &origin;
     let _hosts: &str = &env!("hosts");
     let hosts: Vec<&str> = _hosts.split(",").collect();
     //println!("{:?}", host);
