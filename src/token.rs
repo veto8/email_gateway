@@ -30,6 +30,7 @@ pub async fn get_token(
     let mut page = "".to_string();
     let mut client_host = "".to_string();
     let mut random = "".to_string();
+    let mut origin = "".to_string();
 
     //println!("{}", env!("token_secret"));
 
@@ -48,9 +49,14 @@ pub async fn get_token(
     }
 
     let _origin = headers.get("origin");
-    let mut origin = "".to_string();
     if _origin.is_some() {
-        origin = _origin.unwrap().to_str().unwrap().to_string();
+        origin = _origin
+            .unwrap()
+            .to_str()
+            .unwrap()
+            .to_string()
+            .replace("https://", "")
+            .replace("http://", "");
     }
     let host: &str = &origin;
     let _hosts: &str = &env!("hosts");
@@ -73,6 +79,7 @@ pub async fn get_token(
         {
             "name": "email token",
             "host": host,
+            "client_host": client_host,
             "page": page,
             "token":token
         }
