@@ -4,7 +4,7 @@ use axum::{
     Router,
 };
 use libs::email::email;
-use libs::hello::*;
+use libs::test::*;
 use libs::token::*;
 use tower_http::cors::CorsLayer;
 
