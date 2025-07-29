@@ -7,15 +7,11 @@ use axum::{
 use axum_client_ip::XRealIp as ClientIp;
 use std::net::SocketAddr;
 
-pub async fn test(
-    headers: HeaderMap,
-    req: Request,
-    ConnectInfo(addr): ConnectInfo<SocketAddr>,
-) -> impl IntoResponse {
+pub async fn test(headers: HeaderMap, req: Request) -> impl IntoResponse {
     // http://127.0.0.1:8889/test
     //println!("{:?}", ip);
 
-    let ip = req
+    let xip = req
         .headers()
         .get("x-forwarded-for")
         .and_then(|v| v.to_str().ok())
@@ -33,7 +29,7 @@ pub async fn test(
             "name": name,
             "host": host,
             "user_agent": user_agent,
-            "ip": ip,
+            "xip": xip,
         }
     ]);
 
