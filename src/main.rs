@@ -36,8 +36,8 @@ async fn main() {
     println!("http://{}/token", host);
     println!("http://127.0.0.1:8089/test");
     println!("https://email.local/test");
-    println!("http://88.198.49.173:8089/test");
     println!("https://api.grallator.com/test");
+    println!("https://api.grallator.com/token?page=domain-swapper&client_host=domain-swapper.myridia.com&r=55");
     let listener = tokio::net::TcpListener::bind(host).await.unwrap();
     axum::serve(listener, app).await.unwrap();
 }
