@@ -48,7 +48,7 @@ pub async fn get_token(
     }
 
     let host: &str = &headers
-        .get("origin")
+        .get("host")
         .unwrap()
         .to_str()
         .unwrap()
