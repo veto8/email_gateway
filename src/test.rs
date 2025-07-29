@@ -22,12 +22,16 @@ pub async fn test(headers: HeaderMap, req: Request) -> impl IntoResponse {
     let name: &str = &env!("name");
     let host: &str = headers.get("host").unwrap().to_str().unwrap();
     let user_agent: &str = headers.get("user-agent").unwrap().to_str().unwrap();
-    //let _origin: &str = headers.get("origin").unwrap().to_str().unwrap();
-
+    let _origin = headers.get("origin");
+    let mut origin = "".to_string();
+    if _origin.is_some() {
+        origin = _origin.unwrap().to_str().unwrap().to_string();
+    }
     let r = serde_json::json!([
         {
             "name": name,
             "host": host,
+            "origin": &origin,
             "user_agent": user_agent,
             "xip": xip,
         }
