@@ -5,6 +5,7 @@ use axum::{
 };
 
 use libs::email::email;
+use libs::nslookup::*;
 use libs::test::*;
 use libs::token::*;
 //use std::net::SocketAddr;
@@ -27,6 +28,7 @@ async fn main() {
         .allow_methods([Method::GET, Method::OPTIONS, Method::POST]);
 
     let app = Router::new()
+        .route("/nslookup", get(nslookup))
         .route("/test", get(test))
         .route("/token", get(get_token))
         .route("/email", post(email))
