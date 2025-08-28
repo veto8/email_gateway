@@ -25,6 +25,7 @@ async fn main() {
                 .parse::<HeaderValue>()
                 .unwrap(),
         )
+        .allow_origin("https://lookup.myridia.com".parse::<HeaderValue>().unwrap())
         .allow_methods([Method::GET, Method::OPTIONS, Method::POST]);
 
     let app = Router::new()
