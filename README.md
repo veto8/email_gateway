@@ -3,3 +3,9 @@
 * Usefull to use with static website to handle contact forms 
 
 
+# Check and Restart the service on Debian Server
+```
+ystemctl status email_gateway
+ystemctl restart email_gateway
+```
+
