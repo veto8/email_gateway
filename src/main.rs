@@ -39,6 +39,7 @@ async fn main() {
     let host = "0.0.0.0:8089";
     println!("http://{}/test", host);
     println!("http://{}/token", host);
+    println!("http://{}/nslookup?domain=baeckerei-katz.de", host);
     println!("http://127.0.0.1:8089/test");
     println!("https://email.local/test");
     println!("https://api.grallator.com/test");

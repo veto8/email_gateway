@@ -1,11 +1,6 @@
 //use jsonwebtoken::{decode, encode, Algorithm, DecodingKey, EncodingKey, Header, Validation};
-use axum::{
-    extract::Query,
-    http::{HeaderMap, Method},
-    response::IntoResponse,
-    Json,
-};
-use base64::{decode, encode};
+use axum::{extract::Query, http::HeaderMap, response::IntoResponse, Json};
+//use base64::{decode, encode};
 use hmac::{Hmac, Mac};
 use jwt::{SignWithKey, VerifyWithKey};
 use serde::{Deserialize, Serialize};
@@ -143,7 +138,7 @@ pub async fn auth_token(token: &str) -> Result<bool, Box<dyn Error>> {
             let unix_expire: u64 = _unix_expire.unwrap().parse().unwrap();
             let unix_stamp: u64 = _unix_stamp.unwrap().parse().unwrap();
             let host: String = _host.unwrap().parse().unwrap();
-            let page: String = _page.unwrap().parse().unwrap();
+            //let page: String = _page.unwrap().parse().unwrap();
             let random: i32 = _random.unwrap().parse().unwrap();
             let random_max: i32 = env!("random_max").to_string().parse().unwrap();
             let time_passed: u64 = env!("time_passed").to_string().parse().unwrap();
