@@ -5,6 +5,7 @@ use axum::{
 };
 
 use libs::email::email;
+use libs::nslookup::*;
 use libs::test::*;
 use libs::token::*;
 //use std::net::SocketAddr;
@@ -27,6 +28,7 @@ async fn main() {
         .allow_methods([Method::GET, Method::OPTIONS, Method::POST]);
 
     let app = Router::new()
+        .route("/nslookup", get(nslookup))
         .route("/test", get(test))
         .route("/token", get(get_token))
         .route("/email", post(email))
@@ -37,6 +39,7 @@ async fn main() {
     let host = "0.0.0.0:8089";
     println!("http://{}/test", host);
     println!("http://{}/token", host);
+    println!("http://{}/nslookup?domain=baeckerei-katz.de", host);
     println!("http://127.0.0.1:8089/test");
     println!("https://email.local/test");
     println!("https://api.grallator.com/test");
