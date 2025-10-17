@@ -56,7 +56,8 @@ pub async fn get_token(
     let host: &str = &origin;
     let _hosts: &str = &env!("hosts");
     let hosts: Vec<&str> = _hosts.split(",").collect();
-    //println!("{:?}", host);
+    println!("{:?}", hosts);
+    println!("{:?}", hosts.contains(&host));
     if hosts.contains(&host)
         && page != ""
         && client_host != ""
